@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		7D3DC1FE1E1632D800A2BA59 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D3DC1FD1E1632D800A2BA59 /* main.cpp */; };
+		7D3DC2051E16428100A2BA59 /* gg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D3DC2041E16428100A2BA59 /* gg.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,7 +25,12 @@
 
 /* Begin PBXFileReference section */
 		7D3DC1FA1E1632D800A2BA59 /* sampler */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sampler; sourceTree = BUILT_PRODUCTS_DIR; };
-		7D3DC1FD1E1632D800A2BA59 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		7D3DC1FD1E1632D800A2BA59 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 8; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		7D3DC2041E16428100A2BA59 /* gg.cpp */ = {isa = PBXFileReference; fileEncoding = 8; lastKnownFileType = sourcecode.cpp.cpp; path = gg.cpp; sourceTree = "<group>"; };
+		7D3DC2061E16428600A2BA59 /* gg.h */ = {isa = PBXFileReference; fileEncoding = 8; lastKnownFileType = sourcecode.c.h; path = gg.h; sourceTree = "<group>"; };
+		7D3DC2071E16428A00A2BA59 /* Window.h */ = {isa = PBXFileReference; fileEncoding = 8; lastKnownFileType = sourcecode.c.h; path = Window.h; sourceTree = "<group>"; };
+		7D3DC2091E16485D00A2BA59 /* point.frag */ = {isa = PBXFileReference; fileEncoding = 8; lastKnownFileType = sourcecode.glsl; path = point.frag; sourceTree = "<group>"; };
+		7DEA9D511E1BE1CD0060C305 /* point.vert */ = {isa = PBXFileReference; fileEncoding = 8; lastKnownFileType = sourcecode.glsl; path = point.vert; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +64,11 @@
 			isa = PBXGroup;
 			children = (
 				7D3DC1FD1E1632D800A2BA59 /* main.cpp */,
+				7D3DC2061E16428600A2BA59 /* gg.h */,
+				7D3DC2041E16428100A2BA59 /* gg.cpp */,
+				7D3DC2071E16428A00A2BA59 /* Window.h */,
+				7DEA9D511E1BE1CD0060C305 /* point.vert */,
+				7D3DC2091E16485D00A2BA59 /* point.frag */,
 			);
 			path = sampler;
 			sourceTree = "<group>";
@@ -121,6 +132,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7D3DC1FE1E1632D800A2BA59 /* main.cpp in Sources */,
+				7D3DC2051E16428100A2BA59 /* gg.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,7 +229,21 @@
 		7D3DC2021E1632D800A2BA59 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				DEVELOPMENT_TEAM = T98UR7H9EJ;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_LDFLAGS = (
+					"-lglfw3",
+					"-framework",
+					OpenGL,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					IOKit,
+					"-framework",
+					Cocoa,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -225,7 +251,21 @@
 		7D3DC2031E1632D800A2BA59 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				DEVELOPMENT_TEAM = T98UR7H9EJ;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_LDFLAGS = (
+					"-lglfw3",
+					"-framework",
+					OpenGL,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					IOKit,
+					"-framework",
+					Cocoa,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -249,6 +289,7 @@
 				7D3DC2031E1632D800A2BA59 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

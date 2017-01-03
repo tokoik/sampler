@@ -1,16 +1,128 @@
-//
-//  main.cpp
-//  sampler
-//
-//  Created by ã“ã†ã¸ã„ on 2016/12/30.
-//  Copyright Â© 2016å¹´ Kohe Tokoi. All rights reserved.
-//
+#include <cstdlib>
+#include <cmath>
+#include <iostream>
+#include <vector>
+#include "gg.h"
+#include "Window.h"
 
-#include "glfw3.h"
+// ¶¬‚·‚é“_‚Ì”
+const GLint points(10000);
 
-int main(int argc, const char * argv[])
+// ˆê—l—””­¶ (Xorshift –@)
+float xorshift()
 {
-  // insert code here...
-  std::cout << "Hello, World!\n";
-  return 0;
+  static uint32_t y(2463534242);
+  
+  // ƒf[ƒ^‚Ì“ü‚ê‘Ö‚¦
+  y = y ^ (y << 13);
+  y = y ^ (y >> 17);
+  
+  // [0, 1] ‚É³‹K‰»
+  return static_cast<float>(y = y ^ (y << 5)) * 2.3283064e-10f;
+}
+
+// ƒTƒ“ƒvƒ‹“_‚Ìì¬
+void createSampler(GLsizei samples, std::vector<GLfloat> &sample, GLfloat n)
+{
+  // e © 1 / (n + 1)
+  const auto e(1.0f / (n + 1.0f));
+  
+  for (unsigned int i = 0; i < samples; ++i)
+  {
+    const auto z(pow(xorshift(), e));
+    const auto d(sqrt(1.0f - z * z));
+    const auto t(6.2831853f * xorshift());
+    const auto x(d * cos(t));
+    const auto y(d * sin(t));
+    
+    sample.push_back(y);
+    sample.push_back(z);
+    sample.push_back(x);
+    //sample.push_back(pow(xorshift(), 1.0f / 3.0f));
+    sample.push_back(pow(z, n));
+    //sample.push_back(1.0f);
+  }
+}
+
+//
+// ƒƒCƒ“
+//
+int main()
+{
+  // GLFW ‚ğ‰Šú‰»‚·‚é
+  if (glfwInit() == GL_FALSE)
+  {
+    // ‰Šú‰»‚É¸”s‚µ‚½
+    std::cerr << "Can't initialize GLFW.\n";
+    return EXIT_FAILURE;
+  }
+  
+  // ƒvƒƒOƒ‰ƒ€I—¹‚Ìˆ—‚ğ“o˜^‚·‚é
+  atexit(glfwTerminate);
+  
+  // OpenGL Version 3.2 Core Profile ‚ğ‘I‘ğ‚·‚é
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  
+  // ƒEƒBƒ“ƒhƒE‚ğì¬‚·‚é
+  Window window(300, 300);
+  
+  // ƒEƒBƒ“ƒhƒE‚ªŠJ‚¯‚½‚©‚Ç‚¤‚©Šm‚©‚ß‚é
+  if (!window.get())
+  {
+    // ƒEƒBƒ“ƒhƒE‚ªŠJ‚¯‚È‚©‚Á‚½
+    std::cerr << "Can't open GLFW window.\n";
+    return EXIT_FAILURE;
+  }
+  
+  // “_ŒQ‚ğì¬‚·‚é
+  std::vector<GLfloat> sample;
+  createSampler(points, sample, 10.0f);
+  GLuint vao;
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
+  GLuint vbo;
+  glGenBuffers(1, &vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, sample.size() * sizeof (GLfloat), sample.data(), GL_STATIC_DRAW);
+  glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(0);
+  
+  // }Œ`‚Ì•\¦‚É—p‚¢‚éƒVƒF[ƒ_‚ğ“Ç‚İ‚Ş
+  const GgPointShader point("point.vert", "point.frag");
+  
+  // }Œ`•\¦—p‚Ì‹–ì•ÏŠ·s—ñ‚ğİ’è‚·‚é
+  const auto mv(ggLookat(0.0f, 0.5f, 2.5f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f));
+  
+  // ‰B–ÊÁ‹‚ğs‚¤
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
+
+  // ƒEƒBƒ“ƒhƒE‚ªŠJ‚¢‚Ä‚¢‚éŠÔŒJ‚è•Ô‚·
+  while (!window.shouldClose())
+  {
+    // ƒrƒ…[ƒ|[ƒg‚ğİ’è‚·‚é
+    window.setViewport();
+    
+    // ƒJƒ‰[ƒoƒbƒtƒ@‚ÆƒfƒvƒXƒoƒbƒtƒ@‚ğÁ‹‚·‚é
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    // }Œ`•`‰æ—p‚ÌƒVƒF[ƒ_ƒvƒƒOƒ‰ƒ€‚Ìg—p‚ğŠJn‚·‚é
+    point.use();
+    
+    // }Œ`•\¦—p‚Ì“Š‰e•ÏŠ·s—ñ‚ğŒ»İ‚ÌƒEƒBƒ“ƒhƒE‚ÌƒAƒXƒyƒNƒg‚É‡‚í‚¹‚Äİ’è‚·‚é
+    const auto mp(ggPerspective(1.0f, window.getAspect(), 1.0f, 5.0f));
+
+    // •ÏŠ·s—ñ‚ğİ’è‚·‚é
+    point.loadMatrix(mp, mv * window.getLeftTrackball());
+    
+    // }Œ`‚ğ•`‰æ‚·‚é
+    glBindVertexArray(vao);
+    glDrawArrays(GL_POINTS, 0, points);
+    
+    // ƒJƒ‰[ƒoƒbƒtƒ@‚ğ“ü‚ê‘Ö‚¦‚ÄƒCƒxƒ“ƒg‚ğæ‚èo‚·
+    window.swapBuffers();
+  }
 }
